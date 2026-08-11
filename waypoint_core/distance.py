@@ -3,9 +3,17 @@ waypoint_core/distance.py
 --------------------------
 Distance value type for the Waypoint trail-finder.
 
-Stores a magnitude (a non-negative number) and a unit
-('km' or 'mi'). Provides a read-only accessor and a
-convert() method to switch between units.
+Week 8 update: operator overloading added.
+    __add__  — Distance + Distance
+    __sub__  — Distance - Distance
+    __eq__   — Distance == Distance
+    __lt__   — Distance < Distance
+    __gt__   — Distance > Distance
+
+Mixed-unit rule: when two Distance objects with different
+units are combined, the right-hand operand is auto-converted
+to match the left-hand unit before the operation. This keeps
+the result unit predictable (always the left operand's unit).
 """
 
 
@@ -15,19 +23,15 @@ class Distance:
 
     Parameters:
         magnitude (float) : The distance value. Must be >= 0.
-        unit      (str)   : The unit of measurement.
-                            Must be 'km' or 'mi'.
+        unit      (str)   : 'km' or 'mi'.
 
     Raises:
         ValueError: If magnitude is negative.
         ValueError: If unit is not 'km' or 'mi'.
     """
 
-    # Conversion factor between km and miles
-    _KM_TO_MI = 0.621371
-    _MI_TO_KM = 1.60934
-
-    # Valid units
+    _KM_TO_MI  = 0.621371
+    _MI_TO_KM  = 1.60934
     VALID_UNITS = ('km', 'mi')
 
     def __init__(self, magnitude, unit):
@@ -41,91 +45,165 @@ class Distance:
 
         Returns: None
         """
-        # Validate magnitude — must not be negative
         if magnitude < 0:
             raise ValueError(
-                f"Distance magnitude cannot be negative. "
-                f"Got: {magnitude}"
+                f"Distance magnitude cannot be negative. Got: {magnitude}"
             )
-
-        # Validate unit — must be 'km' or 'mi'
         unit = unit.lower().strip()
         if unit not in self.VALID_UNITS:
             raise ValueError(
-                f"Invalid unit '{unit}'. "
-                f"Must be one of: {self.VALID_UNITS}"
+                f"Invalid unit '{unit}'. Must be one of: {self.VALID_UNITS}"
             )
-
-        # Store as private attributes (encapsulation)
         self._magnitude = float(magnitude)
         self._unit      = unit
 
     # --------------------------------------------------
-    # Read-only accessor (property)
+    # Read-only accessors
     # --------------------------------------------------
 
     @property
     def magnitude(self):
-        """
-        Read-only accessor for the distance magnitude.
-
-        Returns:
-            float: The distance value.
-        """
+        """Return the distance magnitude. Returns: float"""
         return self._magnitude
 
     @property
     def unit(self):
-        """
-        Read-only accessor for the distance unit.
-
-        Returns:
-            str: 'km' or 'mi'.
-        """
+        """Return the distance unit. Returns: str"""
         return self._unit
 
     # --------------------------------------------------
-    # convert() — return a new Distance in the other unit
+    # convert() — return new Distance in opposite unit
     # --------------------------------------------------
 
     def convert(self):
         """
-        Convert this distance to the other unit and return
-        a new Distance object. Does not modify self.
+        Convert to the other unit and return a new Distance.
+        Does not modify self.
 
         Returns:
-            Distance: A new Distance in the opposite unit.
-
-        Example:
-            Distance(5, 'km').convert() -> Distance(3.107, 'mi')
+            Distance: New Distance in the opposite unit.
         """
         if self._unit == 'km':
-            new_magnitude = self._magnitude * self._KM_TO_MI
-            new_unit      = 'mi'
+            return Distance(self._magnitude * self._KM_TO_MI, 'mi')
         else:
-            new_magnitude = self._magnitude * self._MI_TO_KM
-            new_unit      = 'km'
-
-        return Distance(new_magnitude, new_unit)
+            return Distance(self._magnitude * self._MI_TO_KM, 'km')
 
     # --------------------------------------------------
-    # String representations (stretch goal)
+    # Helper: convert other to same unit as self
+    # --------------------------------------------------
+
+    def _to_same_unit(self, other):
+        """
+        Return other as a Distance in self's unit.
+        If units already match, return other unchanged.
+
+        Parameters:
+            other (Distance) : The other Distance.
+
+        Returns:
+            Distance: other in self's unit.
+        """
+        if other.unit != self._unit:
+            return other.convert()
+        return other
+
+    # --------------------------------------------------
+    # Operator overloading (Week 8 — WP-202)
+    # --------------------------------------------------
+
+    def __add__(self, other):
+        """
+        Add two Distance objects. Mixed units: the right-hand
+        operand is auto-converted to the left-hand unit.
+
+        Parameters:
+            other (Distance) : Distance to add.
+
+        Returns:
+            Distance: Sum in self's unit.
+
+        Raises:
+            TypeError: If other is not a Distance.
+        """
+        if not isinstance(other, Distance):
+            return NotImplemented
+        other = self._to_same_unit(other)
+        return Distance(self._magnitude + other.magnitude, self._unit)
+
+    def __sub__(self, other):
+        """
+        Subtract two Distance objects. Mixed units: auto-converted.
+        Result is clamped to 0 if subtraction would go negative.
+
+        Parameters:
+            other (Distance) : Distance to subtract.
+
+        Returns:
+            Distance: Difference in self's unit (min 0).
+
+        Raises:
+            TypeError: If other is not a Distance.
+        """
+        if not isinstance(other, Distance):
+            return NotImplemented
+        other  = self._to_same_unit(other)
+        result = self._magnitude - other.magnitude
+        return Distance(max(0.0, result), self._unit)
+
+    def __eq__(self, other):
+        """
+        Two Distance objects are equal if their magnitudes are
+        equal after converting to the same unit.
+
+        Parameters:
+            other (Distance) : Distance to compare.
+
+        Returns:
+            bool: True if equal within floating-point tolerance.
+        """
+        if not isinstance(other, Distance):
+            return NotImplemented
+        other = self._to_same_unit(other)
+        return abs(self._magnitude - other.magnitude) < 1e-6
+
+    def __lt__(self, other):
+        """
+        Less-than comparison after unit alignment.
+
+        Parameters:
+            other (Distance) : Distance to compare.
+
+        Returns:
+            bool: True if self < other.
+        """
+        if not isinstance(other, Distance):
+            return NotImplemented
+        other = self._to_same_unit(other)
+        return self._magnitude < other.magnitude
+
+    def __gt__(self, other):
+        """
+        Greater-than comparison after unit alignment.
+
+        Parameters:
+            other (Distance) : Distance to compare.
+
+        Returns:
+            bool: True if self > other.
+        """
+        if not isinstance(other, Distance):
+            return NotImplemented
+        other = self._to_same_unit(other)
+        return self._magnitude > other.magnitude
+
+    # --------------------------------------------------
+    # String representations
     # --------------------------------------------------
 
     def __str__(self):
-        """
-        Human-readable string representation.
-
-        Returns:
-            str: e.g. '5.00 km'
-        """
+        """Human-readable: '5.00 km'. Returns: str"""
         return f"{self._magnitude:.2f} {self._unit}"
 
     def __repr__(self):
-        """
-        Developer-friendly representation.
-
-        Returns:
-            str: e.g. "Distance(5.0, 'km')"
-        """
+        """Developer repr: Distance(5.0, 'km'). Returns: str"""
         return f"Distance({self._magnitude!r}, {self._unit!r})"
