@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+<form method="post">
+    {% csrf_token %}
+    <p><label>Name: <input type="text" name="name" required></label></p>
+    <p><label>Email: <input type="email" name="email" required></label></p>
+    <p><label>Trail: <input type="text" name="trail" required></label></p>
+    <p><label>Note:<br><textarea name="note" rows="4" cols="40"></textarea></label></p>
+    <button type="submit">Submit Report</button>
+</form>
+{% endblock %}

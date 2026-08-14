@@ -9,6 +9,8 @@ Week 9: initial configuration.
 - templates configured with APP_DIRS = True
 - SQLite database (default)
 - TIME_ZONE set to America/Toronto
+
+Week 10: static files wired in (STATICFILES_DIRS) for style.css.
 """
 
 from pathlib import Path
@@ -89,7 +91,8 @@ USE_I18N      = True
 USE_TZ        = True
 
 # Static files
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
