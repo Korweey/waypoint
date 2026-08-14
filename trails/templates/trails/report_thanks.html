@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+<div class="thank-you" style="padding:1rem; background:#e8f5e9; border-radius:6px;">
+    <p>Thanks, {{ name }} — we've received your report for <strong>{{ trail }}</strong>.</p>
+</div>
+{% endblock %}

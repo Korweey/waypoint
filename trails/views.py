@@ -1,17 +1,20 @@
 """
 trails/views.py
 ----------------
-Views for the trails app — Week 9.
+Views for the trails app.
 
-index() — renders the homepage with a welcome message
-          and a hard-coded list of sample trails passed
-          as template context.
+Week 9:
+index()  — renders the homepage with a welcome message
+           and a hard-coded list of sample trails passed
+           as template context.
+about()  — renders a simple about page.
 
-about() — renders a simple about page.
-
-Both views use Django's render() shortcut which loads
-the template, fills in the context, and returns an
-HttpResponse automatically.
+Week 10:
+report() — GET renders a blank trail-report form;
+           POST reads the submitted data and renders
+           a personalized thank-you page.
+search() — safely reads an optional 'q' query param
+           and renders the search page.
 """
 
 from django.shortcuts import render
@@ -54,10 +57,6 @@ def index(request):
     """
     Homepage view — renders the trail listing page.
 
-    Passes all sample trails to the template as context
-    so the template can loop over them and display each
-    trail's name, distance, difficulty, and type.
-
     Parameters:
         request (HttpRequest) : The incoming HTTP request.
 
@@ -88,3 +87,54 @@ def about(request):
         'course':     'Application Programming CCGC 5003',
     }
     return render(request, 'trails/about.html', context)
+
+
+def report(request):
+    """
+    Trail report view.
+
+    GET  -> renders a blank report form.
+    POST -> reads submitted data, renders a personalized thank-you.
+
+    Parameters:
+        request (HttpRequest) : The incoming HTTP request.
+
+    Returns:
+        HttpResponse: Rendered trails/report.html (GET) or
+                       trails/report_thanks.html (POST).
+    """
+    if request.method == 'POST':
+        name  = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        trail = request.POST.get('trail', '').strip()
+        note  = request.POST.get('note', '').strip()
+
+        context = {
+            'page_title': 'Thanks for your report!',
+            'name':       name,
+            'email':      email,
+            'trail':      trail,
+            'note':       note,
+        }
+        return render(request, 'trails/report_thanks.html', context)
+
+    context = {'page_title': 'Report a Trail'}
+    return render(request, 'trails/report.html', context)
+
+
+def search(request):
+    """
+    Search view — safely reads an optional 'q' query param.
+
+    Parameters:
+        request (HttpRequest) : The incoming HTTP request.
+
+    Returns:
+        HttpResponse: Rendered trails/search.html template.
+    """
+    query = request.GET.get('q', '')
+    context = {
+        'page_title': 'Search Trails',
+        'query':      query,
+    }
+    return render(request, 'trails/search.html', context)

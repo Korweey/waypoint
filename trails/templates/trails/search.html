@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+<h2>{{ page_title }}</h2>
+<form method="get">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search trails...">
+    <button type="submit">Search</button>
+</form>
+{% if query %}
+    <p>You searched for: <strong>{{ query }}</strong></p>
+{% endif %}
+{% endblock %}
