@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<h2>About Waypoint</h2>
+
+<p style="margin-top:1rem;">
+    Waypoint is a trail-finder and trip-planner application built as part of
+    <strong>{{ course }}</strong>.
+</p>
+
+<p style="margin-top:1rem;">
+    The application lets hikers browse trails, build itineraries, and plan
+    multi-day backpacking routes based on distance, elevation, and difficulty.
+</p>
+
+<hr style="margin:2rem 0; border:none; border-top:1px solid #ccc;">
+
+<h3 style="color:#2d5a27;">Developer</h3>
+<ul style="margin-top:0.5rem; list-style:none; padding-left:0;">
+    <li><strong>Name:</strong> {{ developer }}</li>
+    <li><strong>Student ID:</strong> {{ student_id }}</li>
+    <li><strong>Course:</strong> {{ course }}</li>
+</ul>
+
+{% endblock %}
