@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<h2>Trail Catalogue</h2>
+<p>Browse our current trails. More routes added regularly.</p>
+
+{% if trails %}
+<table style="width:100%; border-collapse:collapse; margin-top:1.5rem;">
+    <thead>
+        <tr style="background:#2d5a27; color:white;">
+            <th style="padding:0.7rem 1rem; text-align:left;">#</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Trail Name</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Distance</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Difficulty</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Type</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for trail in trails %}
+        <tr style="background: {% cycle '#ffffff' '#f0f4f0' %};">
+            <td style="padding:0.6rem 1rem;">{{ trail.id }}</td>
+            <td style="padding:0.6rem 1rem;"><strong>{{ trail.name }}</strong></td>
+            <td style="padding:0.6rem 1rem;">{{ trail.distance }}</td>
+            <td style="padding:0.6rem 1rem;">{{ trail.difficulty|capfirst }}</td>
+            <td style="padding:0.6rem 1rem;">{{ trail.type }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<p style="margin-top:1rem; color:#666;">
+    Showing {{ trails|length }} trail{{ trails|length|pluralize }}.
+</p>
+
+{% else %}
+<p style="margin-top:1rem; color:#888;">
+    No trails available yet. Check back soon!
+</p>
+{% endif %}
+
+{% endblock %}
