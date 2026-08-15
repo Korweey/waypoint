@@ -4,9 +4,6 @@ trails/views.py
 Views for the trails app.
 
 Week 9:
-index()  — renders the homepage/catalog with a welcome message
-           and a hard-coded list of sample trails passed
-           as template context.
 about()  — renders a simple about page.
 
 Week 10:
@@ -17,77 +14,27 @@ search() — safely reads an optional 'q' query param
            and renders the search page.
 
 Week 11:
-index() now serves as the trail catalog: each trail dict
-includes distance_km (numeric, for floatformat filtering),
-elevation_gain, and is_open — used by the template to badge
-closed/hard trails and number rows with forloop.counter.
+index()  — renders the trail catalog using the shared base.html
+           partials, with badges and forloop.counter handled in
+           the template.
+
+Week 12:
+index() now queries the Trail model instead of a hard-coded list.
+Only open trails are shown, ordered by distance — the Week 11
+template renders these model instances with no changes required.
 """
 
 from django.shortcuts import render
-
-# Sample trail data — hard-coded for Weeks 9-11.
-# Week 12 will replace this with database queries.
-SAMPLE_TRAILS = [
-    {
-        'id':             1,
-        'name':           'Ridgeline Loop',
-        'distance_km':    8.5,
-        'elevation_gain': 450,
-        'difficulty':     'hard',
-        'type':           'DayHike',
-        'is_open':        True,
-    },
-    {
-        'id':             2,
-        'name':           'Coastal Traverse',
-        'distance_km':    30.0,
-        'elevation_gain': 1200,
-        'difficulty':     'expert',
-        'type':           'BackpackingRoute',
-        'is_open':        True,
-    },
-    {
-        'id':             3,
-        'name':           'Speed Loop',
-        'distance_km':    12.0,
-        'elevation_gain': 300,
-        'difficulty':     'moderate',
-        'type':           'TrailRun',
-        'is_open':        True,
-    },
-    {
-        'id':             4,
-        'name':           'Summit Push',
-        'distance_km':    10.0,
-        'elevation_gain': 900,
-        'difficulty':     'hard',
-        'type':           'GuidedDayHike',
-        'is_open':        False,
-    },
-    {
-        'id':             5,
-        'name':           'Meadow Walk',
-        'distance_km':    5.25,
-        'elevation_gain': 120,
-        'difficulty':     'easy',
-        'type':           'DayHike',
-        'is_open':        True,
-    },
-    {
-        'id':             6,
-        'name':           'Alpine Traverse',
-        'distance_km':    22.75,
-        'elevation_gain': 1600,
-        'difficulty':     'expert',
-        'type':           'BackpackingRoute',
-        'is_open':        False,
-    },
-]
+from .models import Trail
 
 
 def index(request):
     """
     Homepage / catalog view — renders the trail listing page.
+
+    Queries only open trails from the database, ordered by
+    distance_km ascending. Closed trails are excluded here in
+    the query itself, not just hidden in the template.
 
     Parameters:
         request (HttpRequest) : The incoming HTTP request.
@@ -95,9 +42,10 @@ def index(request):
     Returns:
         HttpResponse: Rendered trails/index.html template.
     """
+    trails = Trail.objects.filter(is_open=True).order_by('distance_km')
     context = {
         'page_title': 'Waypoint — Find Your Trail',
-        'trails':     SAMPLE_TRAILS,
+        'trails':     trails,
     }
     return render(request, 'trails/index.html', context)
 
