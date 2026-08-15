@@ -14,6 +14,7 @@
             <th style="padding:0.7rem 1rem; text-align:left;">#</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Trail Name</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Distance</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Elevation Gain</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Difficulty</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Type</th>
         </tr>
@@ -21,24 +22,27 @@
     <tbody>
         {% for trail in trails %}
         <tr style="background: {% cycle '#ffffff' '#f0f4f0' %};">
-            <td style="padding:0.6rem 1rem;">{{ trail.id }}</td>
+            <td style="padding:0.6rem 1rem;">{{ forloop.counter }}</td>
             <td style="padding:0.6rem 1rem;"><strong>{{ trail.name }}</strong></td>
-            <td style="padding:0.6rem 1rem;">{{ trail.distance }}</td>
-            <td style="padding:0.6rem 1rem;">{{ trail.difficulty|capfirst }}</td>
+            <td style="padding:0.6rem 1rem;">{{ trail.distance_km|floatformat:1 }} km</td>
+            <td style="padding:0.6rem 1rem;">{{ trail.elevation_gain }} m</td>
+            <td style="padding:0.6rem 1rem;">
+                {% if not trail.is_open %}
+                    <span class="badge badge-closed">CLOSED</span>
+                {% elif trail.difficulty == 'expert' %}
+                    <span class="badge badge-hard">HARD</span>
+                {% else %}
+                    {{ trail.difficulty|capfirst }}
+                {% endif %}
+            </td>
             <td style="padding:0.6rem 1rem;">{{ trail.type }}</td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-
-<p style="margin-top:1rem; color:#666;">
-    Showing {{ trails|length }} trail{{ trails|length|pluralize }}.
-</p>
-
+<p style="margin-top:1rem; color:#666;">Showing {{ trails|length }} trail{{ trails|length|pluralize }}.</p>
 {% else %}
-<p style="margin-top:1rem; color:#888;">
-    No trails available yet. Check back soon!
-</p>
+<p>No trails available right now — check back soon.</p>
 {% endif %}
 
 {% endblock %}

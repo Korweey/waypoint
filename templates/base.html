@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Waypoint{% endblock %}</title>
 
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
     <style>
-
-	{% load static %}
-	<link rel="stylesheet" href="{% static 'style.css' %}">
-
         /* Simple clean styling — no external dependencies */
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -47,6 +46,16 @@
 
         h2 { color: #2d5a27; margin-bottom: 1rem; }
 
+        .badge {
+            display: inline-block;
+            padding: 0.15rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        .badge-closed { background: #e57373; color: white; }
+        .badge-hard   { background: #ef9a9a; color: #7a1f1f; }
+
         footer {
             text-align: center;
             padding: 1.5rem;
@@ -60,22 +69,14 @@
 </head>
 <body>
 
-<header>
-    <h1>🥾 Waypoint</h1>
-    <nav>
-        <a href="{% url 'trails:index' %}">Trails</a>
-        <a href="{% url 'trails:about' %}">About</a>
-    </nav>
-</header>
+{% include "partials/navbar.html" %}
 
 <main>
     {% block content %}
     {% endblock %}
 </main>
 
-<footer>
-    <p>Waypoint Trail Finder &mdash; CCGC 5003 &mdash; Qawiyy Rabiu (N10038749)</p>
-</footer>
+{% include "partials/footer.html" %}
 
 </body>
 </html>

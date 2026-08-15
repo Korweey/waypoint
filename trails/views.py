@@ -4,7 +4,7 @@ trails/views.py
 Views for the trails app.
 
 Week 9:
-index()  — renders the homepage with a welcome message
+index()  — renders the homepage/catalog with a welcome message
            and a hard-coded list of sample trails passed
            as template context.
 about()  — renders a simple about page.
@@ -15,47 +15,79 @@ report() — GET renders a blank trail-report form;
            a personalized thank-you page.
 search() — safely reads an optional 'q' query param
            and renders the search page.
+
+Week 11:
+index() now serves as the trail catalog: each trail dict
+includes distance_km (numeric, for floatformat filtering),
+elevation_gain, and is_open — used by the template to badge
+closed/hard trails and number rows with forloop.counter.
 """
 
 from django.shortcuts import render
 
-# Sample trail data — hard-coded for Week 9.
+# Sample trail data — hard-coded for Weeks 9-11.
 # Week 12 will replace this with database queries.
 SAMPLE_TRAILS = [
     {
-        'id':         1,
-        'name':       'Ridgeline Loop',
-        'distance':   '8.50 km',
-        'difficulty': 'hard',
-        'type':       'DayHike',
+        'id':             1,
+        'name':           'Ridgeline Loop',
+        'distance_km':    8.5,
+        'elevation_gain': 450,
+        'difficulty':     'hard',
+        'type':           'DayHike',
+        'is_open':        True,
     },
     {
-        'id':         2,
-        'name':       'Coastal Traverse',
-        'distance':   '30.00 km',
-        'difficulty': 'expert',
-        'type':       'BackpackingRoute',
+        'id':             2,
+        'name':           'Coastal Traverse',
+        'distance_km':    30.0,
+        'elevation_gain': 1200,
+        'difficulty':     'expert',
+        'type':           'BackpackingRoute',
+        'is_open':        True,
     },
     {
-        'id':         3,
-        'name':       'Speed Loop',
-        'distance':   '12.00 km',
-        'difficulty': 'moderate',
-        'type':       'TrailRun',
+        'id':             3,
+        'name':           'Speed Loop',
+        'distance_km':    12.0,
+        'elevation_gain': 300,
+        'difficulty':     'moderate',
+        'type':           'TrailRun',
+        'is_open':        True,
     },
     {
-        'id':         4,
-        'name':       'Summit Push',
-        'distance':   '10.00 km',
-        'difficulty': 'hard',
-        'type':       'GuidedDayHike',
+        'id':             4,
+        'name':           'Summit Push',
+        'distance_km':    10.0,
+        'elevation_gain': 900,
+        'difficulty':     'hard',
+        'type':           'GuidedDayHike',
+        'is_open':        False,
+    },
+    {
+        'id':             5,
+        'name':           'Meadow Walk',
+        'distance_km':    5.25,
+        'elevation_gain': 120,
+        'difficulty':     'easy',
+        'type':           'DayHike',
+        'is_open':        True,
+    },
+    {
+        'id':             6,
+        'name':           'Alpine Traverse',
+        'distance_km':    22.75,
+        'elevation_gain': 1600,
+        'difficulty':     'expert',
+        'type':           'BackpackingRoute',
+        'is_open':        False,
     },
 ]
 
 
 def index(request):
     """
-    Homepage view — renders the trail listing page.
+    Homepage / catalog view — renders the trail listing page.
 
     Parameters:
         request (HttpRequest) : The incoming HTTP request.
