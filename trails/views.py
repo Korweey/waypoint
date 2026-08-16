@@ -22,10 +22,15 @@ Week 12:
 index() now queries the Trail model instead of a hard-coded list.
 Only open trails are shown, ordered by distance — the Week 11
 template renders these model instances with no changes required.
+
+Week 13:
+park_trails() — cross-relation query: given a park id, shows only
+                the open trails belonging to that park, reusing the
+                same catalog template with a customized heading.
 """
 
-from django.shortcuts import render
-from .models import Trail
+from django.shortcuts import render, get_object_or_404
+from .models import Trail, Park
 
 
 def index(request):
@@ -45,6 +50,30 @@ def index(request):
     trails = Trail.objects.filter(is_open=True).order_by('distance_km')
     context = {
         'page_title': 'Waypoint — Find Your Trail',
+        'heading':    'Trail Catalogue',
+        'trails':     trails,
+    }
+    return render(request, 'trails/index.html', context)
+
+
+def park_trails(request, park_id):
+    """
+    Cross-relation query view — shows only the open trails that
+    belong to a specific park.
+
+    Parameters:
+        request (HttpRequest) : The incoming HTTP request.
+        park_id (int)         : Primary key of the Park to filter by.
+
+    Returns:
+        HttpResponse: Rendered trails/index.html template, reused
+                       unmodified with a park-specific heading.
+    """
+    park = get_object_or_404(Park, pk=park_id)
+    trails = Trail.objects.filter(park=park, is_open=True).order_by('distance_km')
+    context = {
+        'page_title': f'Trails in {park.name}',
+        'heading':    f'Trails in {park.name}',
         'trails':     trails,
     }
     return render(request, 'trails/index.html', context)

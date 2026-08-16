@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<h2>Trail Catalogue</h2>
+<h2>{{ heading|default:"Trail Catalogue" }}</h2>
 <p>Browse our current trails. More routes added regularly.</p>
 
 {% if trails %}
@@ -16,7 +16,7 @@
             <th style="padding:0.7rem 1rem; text-align:left;">Distance</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Elevation Gain</th>
             <th style="padding:0.7rem 1rem; text-align:left;">Difficulty</th>
-            <th style="padding:0.7rem 1rem; text-align:left;">Type</th>
+            <th style="padding:0.7rem 1rem; text-align:left;">Park</th>
         </tr>
     </thead>
     <tbody>
@@ -35,7 +35,13 @@
                     {{ trail.difficulty|capfirst }}
                 {% endif %}
             </td>
-            <td style="padding:0.6rem 1rem;">{{ trail.type }}</td>
+            <td style="padding:0.6rem 1rem;">
+                {% if trail.park %}
+                    {{ trail.park.name }}
+                {% else %}
+                    <span style="color:#999;">— unassigned —</span>
+                {% endif %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
