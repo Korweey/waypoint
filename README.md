@@ -122,19 +122,18 @@ waypoint/
 |`/trails/about/`|About page|
 |`/admin/`|Django admin (manage Trails and Parks)|
 
-## 
 
 ## Screenshots
 
-*\*\*Trail Catalogue\*\**
+**Trail Catalogue**
 
-*!\[Trail catalog](screenshots/catalog.png)*
+![Trail catalog](screenshots/catalog.png)
 
 
 
-*\*\*Admin — Trails app\*\**
+**Admin — Trails app**
 
-*!\[Admin](screenshots/admin.png)*
+![Admin](screenshots/admin.png)
 
 
 
