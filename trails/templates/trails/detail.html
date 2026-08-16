@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ page_title }}{% endblock %}
+
+{% block content %}
+
+<p><a href="{% url 'trails:index' %}">&larr; Back to catalog</a></p>
+
+<h2>{{ trail.name }}</h2>
+
+<table style="margin-top:1rem;">
+    <tr>
+        <td style="padding:0.4rem 1rem 0.4rem 0; font-weight:bold;">Distance:</td>
+        <td style="padding:0.4rem 0;">{{ trail.distance_km|floatformat:1 }} km</td>
+    </tr>
+    <tr>
+        <td style="padding:0.4rem 1rem 0.4rem 0; font-weight:bold;">Elevation Gain:</td>
+        <td style="padding:0.4rem 0;">{{ trail.elevation_gain }} m</td>
+    </tr>
+    <tr>
+        <td style="padding:0.4rem 1rem 0.4rem 0; font-weight:bold;">Difficulty:</td>
+        <td style="padding:0.4rem 0;">
+            {% if not trail.is_open %}
+                <span class="badge badge-closed">CLOSED</span>
+            {% elif trail.difficulty == 'expert' %}
+                <span class="badge badge-hard">HARD</span>
+            {% else %}
+                {{ trail.difficulty|capfirst }}
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:0.4rem 1rem 0.4rem 0; font-weight:bold;">Park:</td>
+        <td style="padding:0.4rem 0;">
+            {% if trail.park %}
+                <a href="{% url 'trails:park_trails' trail.park.id %}">{{ trail.park.name }}</a>
+            {% else %}
+                <span style="color:#999;">— unassigned —</span>
+            {% endif %}
+        </td>
+    </tr>
+    <tr>
+        <td style="padding:0.4rem 1rem 0.4rem 0; font-weight:bold;">Added:</td>
+        <td style="padding:0.4rem 0;">{{ trail.added|date:"F j, Y" }}</td>
+    </tr>
+</table>
+
+{% endblock %}
