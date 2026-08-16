@@ -27,6 +27,13 @@ Week 13:
 park_trails() — cross-relation query: given a park id, shows only
                 the open trails belonging to that park, reusing the
                 same catalog template with a customized heading.
+
+Week 14:
+trail_detail() — single-trail detail page. Uses get_object_or_404,
+                  so requesting a trail id that doesn't exist returns
+                  a standard Django 404 rather than raising an
+                  unhandled exception — this is what WP-801's
+                  "detail 404" test verifies.
 """
 
 from django.shortcuts import render, get_object_or_404
@@ -54,6 +61,29 @@ def index(request):
         'trails':     trails,
     }
     return render(request, 'trails/index.html', context)
+
+
+def trail_detail(request, trail_id):
+    """
+    Single-trail detail view.
+
+    Uses get_object_or_404, so an unknown trail_id returns a
+    standard 404 response instead of an unhandled DoesNotExist
+    exception.
+
+    Parameters:
+        request (HttpRequest) : The incoming HTTP request.
+        trail_id (int)        : Primary key of the Trail to display.
+
+    Returns:
+        HttpResponse: Rendered trails/detail.html template.
+    """
+    trail = get_object_or_404(Trail, pk=trail_id)
+    context = {
+        'page_title': trail.name,
+        'trail':      trail,
+    }
+    return render(request, 'trails/detail.html', context)
 
 
 def park_trails(request, park_id):

@@ -23,7 +23,9 @@
         {% for trail in trails %}
         <tr style="background: {% cycle '#ffffff' '#f0f4f0' %};">
             <td style="padding:0.6rem 1rem;">{{ forloop.counter }}</td>
-            <td style="padding:0.6rem 1rem;"><strong>{{ trail.name }}</strong></td>
+            <td style="padding:0.6rem 1rem;">
+                <a href="{% url 'trails:trail_detail' trail.id %}"><strong>{{ trail.name }}</strong></a>
+            </td>
             <td style="padding:0.6rem 1rem;">{{ trail.distance_km|floatformat:1 }} km</td>
             <td style="padding:0.6rem 1rem;">{{ trail.elevation_gain }} m</td>
             <td style="padding:0.6rem 1rem;">
